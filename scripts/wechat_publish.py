@@ -5,12 +5,13 @@
              > ~/.config/wechat-mp-pipeline/config.json
 已有 token 可直接设环境变量 WECHAT_MP_ACCESS_TOKEN（跳过换取，适合 CI）。
 
-用法示例：
+用法示例（Windows 把 python3 换成 python）：
   python3 wechat_publish.py --html article.html --title "标题" --author 半糖姐 \
       --digest "一行摘要" --cover cover.png \
       --map "assets/a.png=a.png" --map "assets/b.png=b.png"
   # --map 左边是 HTML 里的 <img src> 相对路径，右边是本地文件；自动上传并替换
   # 更新既有草稿：追加 --media-id <draft media_id>
+  # 没图可用？省略 --cover 会自动传一张占位图并提醒你在后台替换
 仅标准库；有 Pillow 时自动压缩大图（长边<=1400, jpeg q85），无 Pillow 则原样上传
 （微信正文图限制 1MB，超限会报错并提示）。
 """
@@ -69,9 +70,9 @@ def die(msg):
     sys.exit(1)
 
 
-def shrink(path: Path) -> Path:
+def shrink(path: Path, force_jpeg=False) -> Path:
     """Pillow 可用则压缩为 jpg；否则原样返回（超 1MB 会要求装 Pillow）。"""
-    if path.stat().st_size <= 950_000 and path.suffix.lower() in (".jpg", ".jpeg"):
+    if path.stat().st_size <= 950_000 and path.suffix.lower() in (".jpg", ".jpeg") and not force_jpeg:
         return path
     try:
         from PIL import Image
@@ -88,17 +89,39 @@ def shrink(path: Path) -> Path:
 
 
 def multipart(path: Path, field="media"):
+    return _multipart_bytes(path.read_bytes(), path.name, field)
+
+
+def _multipart_bytes(data: bytes, filename: str, field="media"):
     import uuid
     boundary = uuid.uuid4().hex
     head = ('--' + boundary + '\r\nContent-Disposition: form-data; name="' + field +
-            '"; filename="' + path.name + '"\r\nContent-Type: application/octet-stream\r\n\r\n').encode()
-    body = head + path.read_bytes() + ('\r\n--' + boundary + '--\r\n').encode()
+            '"; filename="' + filename + '"\r\nContent-Type: application/octet-stream\r\n\r\n').encode()
+    body = head + data + ('\r\n--' + boundary + '--\r\n').encode()
     return body, {"Content-Type": "multipart/form-data; boundary=" + boundary}
 
 
+PLACEHOLDER_NOTE = "占位封面逻辑见 upload_placeholder_cover（需 Pillow；微信会拒绝微型内嵌图，故动态生成）"
+
+def upload_placeholder_cover(token):
+    """无封面时用 Pillow 生成 900x383 占位图（微信校验图片内容，嵌裸字节小图会被 40113 拒）。"""
+    import tempfile
+    try:
+        from PIL import Image, ImageDraw
+    except ImportError:
+        die("未装 Pillow，无法生成占位封面：请提供 --cover，或 pip install pillow")
+    im = Image.new("RGB", (900, 383), (238, 232, 221))
+    d = ImageDraw.Draw(im)
+    d.rectangle([30, 150, 870, 233], fill=(201, 138, 75))
+    tmp = Path(tempfile.gettempdir()) / "wx-placeholder-cover.png"
+    im.save(tmp)
+    mid, _ = upload_permanent(token, tmp)
+    return mid
+
+
 def upload_permanent(token, path):
-    """封面：永久素材，返回 media_id。"""
-    body, hdr = multipart(shrink(Path(path)))
+    """封面：永久素材，返回 media_id。大图压至 10MB 以内，小 png 也转 jpeg 以保兼容。"""
+    body, hdr = multipart(shrink(Path(path), force_jpeg=True))
     j = json.loads(_raw(API + "/material/add_material?access_token=" + token + "&type=image",
                         data=body, headers=hdr))
     if "media_id" not in j:
@@ -135,6 +158,15 @@ def main():
             "或写 ~/.config/wechat-mp-pipeline/config.json")
     token = get_token(appid, secret)
 
+    try:
+        import PIL  # noqa: F401
+    except ImportError:
+        big = [f for f in ([args.cover] if args.cover else []) + [p.split("=", 1)[1] for p in args.map]
+               if f and Path(f).exists() and Path(f).stat().st_size > 950_000]
+        if big:
+            die("有 " + str(len(big)) + " 张图超过 1MB，需自动压缩但未装 Pillow：pip install pillow（或手动压到 1MB 以内）")
+        print("WARN 未装 Pillow：小于 1MB 的图直接上传，大图会失败（建议 pip install pillow）")
+
     html = Path(args.html).read_text(encoding="utf-8-sig")
     for pair in args.map:
         rel, local = pair.split("=", 1)
@@ -153,7 +185,8 @@ def main():
         art["thumb_media_id"] = mid
         print("[cover] thumb_media_id ok")
     elif not args.media_id:
-        die("新建草稿必须提供 --cover（微信草稿接口要求 thumb_media_id）")
+        art["thumb_media_id"] = upload_placeholder_cover(token)
+        print("WARN 未提供 --cover，已用占位图建稿——发布前请在后台替换封面")
 
     if args.media_id:
         art["media_id"] = args.media_id

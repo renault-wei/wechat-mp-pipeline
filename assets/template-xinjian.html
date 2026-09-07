@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+中性模板二「信笺体」：圆角、暖底、虚线分隔 —— 适合陪伴型/暖心型栏目
+用法：替换 {{...}} 占位；主色整体替换（默认 #C98A4B），每期刊可轮换点缀色
+微信兼容：全内联样式，仅 section/p/span/img，不用 style 标签/div/class
+-->
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{{TITLE}}</title></head>
+<body style="margin:0; padding:0; background:#EFE9DF;">
+<section style="max-width:677px; margin:0 auto; background:#FDF9F3; padding:40px 24px 44px; font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif; color:#4A3B2A; font-size:17px; line-height:2;">
+  <section style="text-align:center; margin-bottom:26px;">
+    <span style="display:inline-block; padding:6px 18px; border:1px solid #C98A4B; border-radius:999px; font-size:12px; letter-spacing:3px; color:#C98A4B; font-weight:bold;">{{SERIES_TAG}}</span>
+  </section>
+  <section style="text-align:center; margin-bottom:24px;">
+    <p style="margin:0 0 12px; font-family:Georgia,'Songti SC',serif; font-size:27px; font-weight:900; color:#3E3222; line-height:1.6;">{{TITLE}}</p>
+    <p style="margin:0; font-size:13px; color:#B9A98F; letter-spacing:2px;">{{SUBTITLE}}</p>
+  </section>
+  <section style="text-align:center; margin-bottom:28px;">
+    <span style="display:inline-block; width:220px; border-top:2px dashed #E3D5BC;"></span>
+  </section>
+  <!-- 信卡块：白底圆角，一段一节 -->
+  <section style="margin:0 0 24px; padding:24px 22px; background:#FFFFFF; border-radius:18px; border:1px solid #F0E6D4;">
+    <p style="margin:0;">{{PARA}}</p>
+  </section>
+  <p style="margin:0 0 18px; font-size:17px; line-height:2;">正文段：<span style="background:linear-gradient(transparent 62%, #F3E3C8 62%); font-weight:bold;">{{KEY_SENTENCE}}</span></p>
+  <section style="text-align:center; margin:0 0 24px;">
+    <img src="{{IMG_PATH}}" alt="" style="max-width:92%; border-radius:18px; border:6px solid #FFFFFF;">
+  </section>
+  <!-- 侧注块：左边条强调（每篇至多两处，避免视觉疲劳） -->
+  <section style="margin:0 0 22px; padding:22px; background:#FFFFFF; border-radius:18px; border-left:6px solid #C98A4B; border-top:1px solid #F0E6D4; border-right:1px solid #F0E6D4; border-bottom:1px solid #F0E6D4;">
+    <p style="margin:0; font-size:16px; line-height:2;">{{SIDE_NOTE}}</p>
+  </section>
+  <section style="text-align:center; margin:26px 0 20px;">
+    <p style="margin:0; font-family:Georgia,'Songti SC',serif; font-size:20px; font-weight:900; color:#3E3222;">{{CLOSING_LINE}}</p>
+  </section>
+  <section style="text-align:center; margin-bottom:20px;">
+    <span style="display:inline-block; width:220px; border-top:2px dashed #E3D5BC;"></span>
+  </section>
+  <section style="text-align:center;">
+    <p style="margin:0 0 4px; font-size:15px; font-weight:bold; color:#3E3222;">{{SIGNATURE}}</p>
+    <p style="margin:0; font-size:13px; color:#B9A98F;">{{FOOTER_NOTE}}</p>
+  </section>
+</section>
+</body>
+</html>

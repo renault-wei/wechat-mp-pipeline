@@ -46,7 +46,7 @@ export WECHAT_MP_SECRET=xxxxxxxx
 2. **成文**：单视角纪律；结构 = 1 个话题触发器 + 1 段档案往事 + 1 个当下动作落点；1000–1400 字；文中任何人/年份/物件必须能在档案中查到——查不到的不许出现
 3. **质检链**（顺序固定，细则见 [references/quality-gates.md](references/quality-gates.md)）：去 AI 味 → 中文 final-QA → 母题黑名单核对 → 知情账本核对 → 红线核对
 4. **配图**：3–4 张章节场景图（从角色"物件地点表"取材，保证图文咬合）+ 1 张 2.35:1 横版封面。用可用的图像生成工具产出；无图像额度时降级：封面用现有图顶替，报告注明待补
-5. **排版**：生成全内联样式 HTML（`<section>` + style 属性，不用 `<style>`/`<div>`/class），浏览器可预览、可整体复制进公众号编辑器
+5. **排版**：生成全内联样式 HTML（`<section>` + style 属性，不用 `<style>`/`<div>`/class），浏览器可预览、可整体复制进公众号编辑器。两套出厂模板见 `assets/template-ribao.html`（观点型栏目）与 `assets/template-xinjian.html`（陪伴型栏目），同一号的不同栏目用不同模板，禁止共用
 6. **推送**：`python3 scripts/wechat_publish.py --html out.html --title ... --author ... --digest ... --cover cover.png --images "img1.png img2.png"`（参数见 `--help`；只新建草稿，绝不设定时/群发）
 7. **回写**：选题库登记已用、母题入库、知情账本记一笔、git commit
 
@@ -64,7 +64,8 @@ export WECHAT_MP_SECRET=xxxxxxxx
 
 ## 4. 数据回路（可选，发布后启用）
 
-`python3 scripts/wechat_data.py --since 昨日` 拉取图文阅读/分享/在看，写入选题库"已用登记"，按周复盘调整排期权重。
+`python wechat_data.py --since 昨日` 拉取图文阅读/分享数据，写入选题库“已用登记”，按周复盘调排期权重。
+未认证个人订阅号可能报 48001（无此 API 权限）：降级为后台看板人工抄录，不影响主链路。
 
 ## 硬边界
 

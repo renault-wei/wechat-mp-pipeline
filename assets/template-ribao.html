@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+中性模板一「小报体」：硬边、双色、栏线分隔 —— 适合观点型/打气型栏目
+用法：替换 4 处 {{...}} 占位；主色可整体替换（默认 #C0392B）
+微信兼容：全内联样式，仅 section/p/span/table，不用 style 标签/div/class
+-->
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{{TITLE}}</title></head>
+<body style="margin:0; padding:0; background:#E8E4DC;">
+<section style="max-width:677px; margin:0 auto; background:#FFFFFF; padding:0 0 36px; font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif; color:#191919; font-size:17px; line-height:2;">
+  <section style="border-bottom:3px solid #191919; padding:14px 22px 10px;">
+    <table style="width:100%; border-collapse:collapse;"><tr>
+      <td style="text-align:left; font-size:12px; letter-spacing:2px; color:#8A8378;">{{SERIES_TAG}}</td>
+      <td style="text-align:right; font-size:12px; letter-spacing:2px; color:#C0392B; font-weight:bold;">{{ISSUE_TAG}}</td>
+    </tr></table>
+  </section>
+  <section style="padding:34px 22px 8px;">
+    <p style="margin:0 0 10px; font-size:29px; font-weight:900; line-height:1.45;">{{TITLE}}</p>
+    <p style="margin:0; font-size:14px; color:#8A8378;">{{AUTHOR_LINE}}</p>
+  </section>
+  <section style="margin:20px 22px 26px; background:#C0392B; padding:14px 18px;">
+    <p style="margin:0; font-size:16px; font-weight:bold; color:#FFFFFF; line-height:1.8;">{{LEDE_LINE1}}<br>{{LEDE_LINE2}}</p>
+  </section>
+  <!-- 正文循环块：每节 = 栏目标题条 + 段落若干，图随节走 -->
+  <section style="padding:0 22px;">
+    <section style="margin:26px 0 22px; border-left:6px solid #C0392B; padding-left:14px;">
+      <p style="margin:0; font-size:13px; letter-spacing:3px; color:#8A8378;">{{SECTION_LABEL}}</p>
+    </section>
+    <p style="margin:0 0 18px;">{{PARA}}</p>
+    <p style="margin:0 0 18px;">高亮示例：<span style="background:#FDE8E4; font-weight:bold;">{{KEY_SENTENCE}}</span></p>
+    <section style="text-align:center; margin:0 0 22px; border:1px solid #E0DBD0;">
+      <img src="{{IMG_PATH}}" alt="" style="width:100%; display:block;">
+      <p style="margin:0; padding:8px 14px; font-size:12px; color:#8A8378; text-align:left;">▲ {{IMG_CAPTION}}</p>
+    </section>
+  </section>
+  <section style="margin:34px 22px 0; border-top:3px solid #191919; padding-top:12px;">
+    <table style="width:100%; border-collapse:collapse;"><tr>
+      <td style="text-align:left; font-size:13px; font-weight:bold;">{{SIGNATURE}}</td>
+      <td style="text-align:right; font-size:12px; color:#8A8378;">{{FOOTER_NOTE}}</td>
+    </tr></table>
+  </section>
+</section>
+</body>
+</html>
