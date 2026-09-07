@@ -1,0 +1,5 @@
+config.json
+.token.json
+*.pipeline.jpg
+__pycache__/
+.DS_Store
